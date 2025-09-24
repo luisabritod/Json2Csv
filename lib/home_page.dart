@@ -1,10 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:json2csv/json_converter.dart';
 
-class HomePage extends StatelessWidget {
-  HomePage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final TextEditingController _jsonController = TextEditingController();
   final TextEditingController _csvController = TextEditingController();
+
+  void _convertJsonToCsv() {
+    String json = _jsonController.text;
+    String csv = convertJsonToCsv(json);
+    _csvController.text = csv;
+  }
+
+  void _clear() {
+    _jsonController.clear();
+    _csvController.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,10 +29,15 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Json2Csv Conversor',
-          style: TextStyle(fontSize: 16, color: Colors.white),
+          style: TextStyle(
+            fontSize: 25,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         backgroundColor: Color.fromARGB(255, 43, 194, 136),
         centerTitle: true,
+        elevation: 0,
       ),
 
       body: Padding(
@@ -40,13 +62,16 @@ class HomePage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(onPressed: () {}, child: Text('Limpar')),
+                  ElevatedButton(onPressed: _clear, child: Text('Limpar')),
                   SizedBox(width: 10),
-                  ElevatedButton(onPressed: () {}, child: Text('Converter')),
+                  ElevatedButton(
+                    onPressed: _convertJsonToCsv,
+                    child: Text('Converter'),
+                  ),
                 ],
               ),
               SizedBox(height: 10),
-              Text('CSV:'),
+              Text('Arquivo CSV convertido:'),
               SizedBox(height: 10),
               Expanded(
                 child: TextField(
