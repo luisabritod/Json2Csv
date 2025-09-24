@@ -32,6 +32,8 @@ class _HomePageState extends State<HomePage> {
     _csvController.clear();
   }
 
+  String _telaSelecionada = 'CSV';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,75 +51,102 @@ class _HomePageState extends State<HomePage> {
         elevation: 0,
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Center(
-          child: Column(
-            children: [
-              Text('Cole aqui seu arquivo Json:'),
-              SizedBox(height: 10),
-              Expanded(
-                child: TextField(
-                  controller: _jsonController,
-                  maxLines: null,
-                  expands: true,
-                  decoration: InputDecoration(
-                    labelText: 'Json',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-              SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(onPressed: _clear, child: Text('Limpar')),
-                  SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: _convertJsonToCsv,
-                    child: Text('Converter'),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10),
-              Text('Arquivo CSV convertido:'),
-              SizedBox(height: 10),
-              Expanded(
-                child: TextField(
-                  controller: _csvController,
-                  maxLines: null,
-                  expands: true,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    labelText: 'CSV',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-              SizedBox(height: 10),
-              Text('Tabela:'),
-              SizedBox(height: 10),
-              if (_csvTable != null)
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Expanded(
-                    child: DataTable(
-                      columns: _csvTable!.cabecalho
-                          .map((index) => DataColumn(label: Text(index)))
-                          .toList(),
-                      rows: _csvTable!.colunas
-                          .map(
-                            (index) => DataRow(
-                              cells: index
-                                  .map((index) => DataCell(Text(index)))
-                                  .toList(),
-                            ),
-                          )
-                          .toList(),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Center(
+            child: Column(
+              children: [
+                Text('Cole aqui seu arquivo Json:'),
+                SizedBox(height: 10),
+                Expanded(
+                  child: TextField(
+                    controller: _jsonController,
+                    maxLines: null,
+                    expands: true,
+                    decoration: InputDecoration(
+                      labelText: 'Json',
+                      border: OutlineInputBorder(),
                     ),
                   ),
                 ),
-            ],
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(onPressed: _clear, child: Text('Limpar')),
+                    SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: _convertJsonToCsv,
+                      child: Text('Converter'),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                RadioGroup(
+                  groupValue: _telaSelecionada,
+                  onChanged: (String? valor) {
+                    setState(() {
+                      _telaSelecionada = valor!;
+                    });
+                  },
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: RadioListTile<String>(
+                          value: 'CSV',
+                          title: Text('CSV'),
+                        ),
+                      ),
+                      Expanded(
+                        child: RadioListTile<String>(
+                          value: 'Tabela',
+                          title: Text('Tabela'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (_telaSelecionada == 'CSV') ...[
+                  Text('Arquivo CSV convertido:'),
+                  SizedBox(height: 10),
+                  Expanded(
+                    child: TextField(
+                      controller: _csvController,
+                      maxLines: null,
+                      expands: true,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        labelText: 'CSV',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
+                ] else if (_csvTable != null) ...[
+                  Text('Tabela:'),
+                  SizedBox(height: 10),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Expanded(
+                      child: DataTable(
+                        columns: _csvTable!.cabecalho
+                            .map((index) => DataColumn(label: Text(index)))
+                            .toList(),
+                        rows: _csvTable!.colunas
+                            .map(
+                              (index) => DataRow(
+                                cells: index
+                                    .map((index) => DataCell(Text(index)))
+                                    .toList(),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ),
         ),
       ),
