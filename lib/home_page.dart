@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:json2csv/json_converter.dart';
+import 'package:json2csv/json_converter_table.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,10 +13,18 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _jsonController = TextEditingController();
   final TextEditingController _csvController = TextEditingController();
 
+  CsvTable? _csvTable;
+
   void _convertJsonToCsv() {
     String json = _jsonController.text;
     String csv = convertJsonToCsv(json);
     _csvController.text = csv;
+
+    final CsvTable? table = jsonToTable(json);
+
+    setState(() {
+      _csvTable = table;
+    });
   }
 
   void _clear() {
@@ -85,6 +94,29 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
+              SizedBox(height: 10),
+              Text('Tabela:'),
+              SizedBox(height: 10),
+              if (_csvTable != null)
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Expanded(
+                    child: DataTable(
+                      columns: _csvTable!.cabecalho
+                          .map((index) => DataColumn(label: Text(index)))
+                          .toList(),
+                      rows: _csvTable!.colunas
+                          .map(
+                            (index) => DataRow(
+                              cells: index
+                                  .map((index) => DataCell(Text(index)))
+                                  .toList(),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
